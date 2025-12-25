@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const metaUsageEl = document.getElementById('meta-usage');
     const resLumensEl = document.getElementById('res-lumens');
 
+    // Lens Calculator
+    const distanceInput = document.getElementById('distance-m');
+    const resTREl = document.getElementById('res-tr');
+    const resLensEl = document.getElementById('res-lens');
+
     // Visualization
     const vizFrame = document.getElementById('viz-frame');
     const vizSlice = document.getElementById('viz-slice');
@@ -39,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         calculate();
         calculateLumens();
+        calculateLensRatio();
     }
 
     function calculateLumens() {
@@ -58,6 +64,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const requiredLumens = (areaSqFt * targetFL) / gain;
 
         resLumensEl.textContent = Math.round(requiredLumens).toLocaleString();
+    }
+
+    function calculateLensRatio() {
+        const distance = parseFloat(distanceInput.value) || 0;
+        const widthM = state.physW / 100;
+
+        if (distance <= 0 || widthM <= 0) {
+            resTREl.textContent = '0.00';
+            resLensEl.textContent = 'Waiting for input...';
+            return;
+        }
+
+        // Apply 10% area safety buffer -> Width increase by approx 5%
+        const projectedWidth = widthM * 1.05;
+        const tr = distance / projectedWidth;
+        resTREl.textContent = tr.toFixed(2);
+
+        let rec = "";
+        if (tr < 0.4) rec = "Ultra Short Throw (UST)";
+        else if (tr < 0.8) rec = "Wide Angle (Short)";
+        else if (tr < 1.3) rec = "Standard Wide";
+        else if (tr < 2.0) rec = "Standard Throw";
+        else if (tr < 4.0) rec = "Long Throw";
+        else rec = "Telephoto / Extra Long";
+
+        resLensEl.textContent = `Suggested: ${rec}`;
     }
 
     function calculate() {
@@ -152,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event Listeners
-    [physWidthInput, physHeightInput, projWidthInput, projHeightInput, lumenEnvSelect, lumenGainInput].forEach(el => {
+    [physWidthInput, physHeightInput, projWidthInput, projHeightInput, lumenEnvSelect, lumenGainInput, distanceInput].forEach(el => {
         el.addEventListener('input', updateState);
     });
 

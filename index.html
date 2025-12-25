@@ -21,90 +21,66 @@
         </header>
 
         <main>
-            <div class="calculator-grid">
-                <!-- Inputs Section -->
-                <section class="input-panel card">
-                    <h2>Physical Surface</h2>
-                    <div class="input-group">
-                        <label for="proj-name">Project / Slice Name</label>
-                        <input type="text" id="proj-name" placeholder="e.g. MAIN SCREEN" value="SLICE 1">
-                    </div>
-                    <div class="input-group">
-                        <label for="phys-width">Width (cm)</label>
-                        <input type="number" id="phys-width" placeholder="e.g. 1355" step="0.1" value="1355">
-                    </div>
-                    <div class="input-group">
-                        <label for="phys-height">Height (cm)</label>
-                        <input type="number" id="phys-height" placeholder="e.g. 270" step="0.1">
+            <!-- 1. Global Setup Section (Top) -->
+            <section class="config-section card">
+                <div class="config-header">
+                    <h2>Project Configuration</h2>
+                </div>
+
+                <div class="config-grid">
+                    <!-- Project Name -->
+                    <div class="config-item wide">
+                        <label for="proj-name">Project Name</label>
+                        <input type="text" id="proj-name" value="SLICE 1">
                     </div>
 
-                    <div class="divider"></div>
+                    <!-- Physical Dimensions -->
+                    <div class="config-item">
+                        <label>Physical Width (cm)</label>
+                        <input type="number" id="phys-width" value="1355" step="0.1">
+                    </div>
+                    <div class="config-item">
+                        <label>Physical Height (cm)</label>
+                        <input type="number" id="phys-height" step="0.1">
+                    </div>
 
-                    <h2>Projector Settings</h2>
-                    <div class="input-group">
-                        <label for="proj-width">Resolution Width (px)</label>
+                    <!-- Projector Resolutions -->
+                    <div class="config-item">
+                        <label>Projector Res W (px)</label>
                         <input type="number" id="proj-width" value="1920">
                     </div>
-                    <div class="input-group">
-                        <label for="proj-height">Resolution Height (px)</label>
+                    <div class="config-item">
+                        <label>Projector Res H (px)</label>
                         <input type="number" id="proj-height" value="1200">
                     </div>
+                </div>
 
-                    <div class="presets">
-                        <button class="btn-preset" data-w="1920" data-h="1200">WUXGA</button>
-                        <button class="btn-preset" data-w="1920" data-h="1080">Full HD</button>
-                        <button class="btn-preset" data-w="1024" data-h="768">XGA</button>
-                        <button class="btn-preset" data-w="3840" data-h="2160">4K UHD</button>
+                <div class="presets-row">
+                    <span class="preset-label">Presets:</span>
+                    <button class="btn-preset" data-w="1920" data-h="1200">WUXGA</button>
+                    <button class="btn-preset" data-w="1920" data-h="1080">FHD</button>
+                    <button class="btn-preset" data-w="3840" data-h="2160">4K</button>
+                </div>
+            </section>
+
+            <!-- 2. Dashboard Grid (Bottom) -->
+            <div class="dashboard-grid">
+
+                <!-- Card A: Content Production (Main Visual) -->
+                <section class="card content-card">
+                    <div class="card-header">
+                        <h2>Digital Content Slice</h2>
+                        <div class="usage-badge" id="meta-usage">0% Usage</div>
                     </div>
 
-                    <div class="divider"></div>
-
-                    <h2>Lumen Requirement</h2>
-                    <div class="input-group">
-                        <label for="lumen-env">Theater Ambience</label>
-                        <select id="lumen-env">
-                            <option value="15">Pitch Dark Theater (15 fL)</option>
-                            <option value="30">Dimly Lit / Control Booth (30 fL)</option>
-                            <option value="50" selected>Normal Room / Bright (50 fL)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="lumen-gain">Screen Gain</label>
-                        <input type="number" id="lumen-gain" value="1.0" step="0.1">
-                    </div>
-
-                    <div class="lumen-result card-inner">
-                        <div class="lumen-value" id="res-lumens">0</div>
-                        <div class="lumen-label">Recommended ANSI Lumens</div>
-                    </div>
-                </section>
-
-                <!-- Results Section -->
-                <section class="result-panel card">
-                    <h2>Calculated Slice</h2>
-                    <div class="result-display">
-                        <div class="result-item">
-                            <span class="label">Width</span>
-                            <span class="value" id="res-width">0</span>
+                    <div class="result-display-large">
+                        <div class="res-value">
+                            <span id="res-width">0</span>
+                            <span class="x-sep">×</span>
+                            <span id="res-height">0</span>
                             <span class="unit">px</span>
                         </div>
-                        <div class="result-separator">×</div>
-                        <div class="result-item">
-                            <span class="label">Height</span>
-                            <span class="value" id="res-height">0</span>
-                            <span class="unit">px</span>
-                        </div>
-                    </div>
-
-                    <div class="info-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Physical Aspect Ratio</span>
-                            <span class="meta-value" id="meta-par">-</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Projector Usage</span>
-                            <span class="meta-value" id="meta-usage">-</span>
-                        </div>
+                        <div class="ar-tag">Aspect Ratio <span id="meta-par">-</span></div>
                     </div>
 
                     <div class="visualization-container">
@@ -117,11 +93,57 @@
                     </div>
 
                     <div class="actions">
-                        <button id="btn-download" class="btn-primary">
-                            <span class="icon">⬇</span> Download Test Pattern
+                        <button id="btn-download" class="btn-primary full-width">
+                            <span class="icon">⬇</span> Download Calibration Pattern
                         </button>
                     </div>
                 </section>
+
+                <!-- Tools Column -->
+                <div class="tools-column">
+
+                    <!-- Card B: Lens Calculator -->
+                    <section class="card tool-card lens-card">
+                        <h2>Lens Throw Calculator</h2>
+                        <div class="tool-content">
+                            <div class="input-group">
+                                <label for="distance-m">Throw Distance (meters)</label>
+                                <input type="number" id="distance-m" placeholder="e.g. 10" step="0.1" value="10">
+                            </div>
+                            <div class="tool-result highlight">
+                                <div class="tr-row">
+                                    <span class="label">Throw Ratio:</span>
+                                    <span class="value" id="res-tr">0.00</span>
+                                </div>
+                                <div class="rec-row" id="res-lens">Waiting for input...</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Card C: Lumen Calculator -->
+                    <section class="card tool-card lumen-card">
+                        <h2>Lumen Requirement</h2>
+                        <div class="tool-content">
+                            <div class="input-group">
+                                <label for="lumen-env">Theater Ambience</label>
+                                <select id="lumen-env">
+                                    <option value="15">Pitch Dark (15 fL)</option>
+                                    <option value="30">Control Booth (30 fL)</option>
+                                    <option value="50" selected>Normal / Bright (50 fL)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="lumen-gain">Screen Gain</label>
+                                <input type="number" id="lumen-gain" value="1.0" step="0.1">
+                            </div>
+                            <div class="tool-result">
+                                <span class="label">Recommended ANSI:</span>
+                                <span class="value large" id="res-lumens">0</span>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
             </div>
         </main>
     </div>
