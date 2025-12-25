@@ -183,95 +183,72 @@ document.addEventListener('DOMContentLoaded', () => {
         const gridSize = 100;
         const ar = (w / h).toFixed(2);
 
-        // 1. Background: Neutral Deep Gray
-        ctx.fillStyle = '#111111';
+        // 1. Background: Black
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, w, h);
 
-        // 2. Grayscale Ramp (Top)
-        const topH = Math.min(h * 0.12, 60);
+        // 2. Grid (Standard Square Grid)
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#333333';
+        ctx.beginPath();
+        for (let x = centerX % gridSize; x <= w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+        for (let y = centerY % gridSize; y <= h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        ctx.stroke();
+
+        // 3. Center Axes (Red)
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
+        ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
+        ctx.stroke();
+
+        // 4. Large Circle (White)
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#ffffff';
+        ctx.beginPath();
+        const radius = Math.min(w, h) * 0.45;
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 5. Grayscale Gradient (255 to 0)
+        const barH = Math.min(h * 0.1, 50);
+        const gradY = h - barH;
         const gradient = ctx.createLinearGradient(0, 0, w, 0);
-        gradient.addColorStop(0, '#000');
-        gradient.addColorStop(1, '#fff');
+        gradient.addColorStop(0, '#ffffff'); // 255
+        gradient.addColorStop(1, '#000000'); // 0
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, w, topH);
+        ctx.fillRect(0, gradY, w, barH);
 
-        ctx.fillStyle = '#fff';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'left';
-        ctx.fillText('Brightness / Contrast Ramp', 10, topH - 10);
-
-        // 3. Color Bars (Bottom)
-        const botH = Math.min(h * 0.12, 60);
+        // 6. Simple Color Strip
+        const colorH = Math.min(h * 0.05, 20);
+        const colorY = gradY - colorH;
         const colors = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff0000', '#0000ff', '#000000'];
-        const barW = w / colors.length;
+        const cw = w / colors.length;
         for (let i = 0; i < colors.length; i++) {
             ctx.fillStyle = colors[i];
-            ctx.fillRect(i * barW, h - botH, barW, botH);
+            ctx.fillRect(i * cw, colorY, cw, colorH);
         }
 
-        // 4. Grid & Mapping Details
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = '#222';
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y <= h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
-        ctx.stroke();
-
-        // 5. Geometry circle
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, Math.min(w, h) / 2.2, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // 6. Focus Patterns (Simplified Burst)
-        function drawFocus(x, y, r) {
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.moveTo(x - r, y); ctx.lineTo(x + r, y);
-            ctx.moveTo(x, y - r); ctx.lineTo(x, y + r);
-            ctx.stroke();
-            for (let i = 4; i < r; i += 12) {
-                ctx.beginPath(); ctx.arc(x, y, i, 0, Math.PI * 2); ctx.stroke();
-            }
-        }
-        const burstR = Math.min(w, h) * 0.1;
-        drawFocus(centerX / 2, centerY, burstR);
-        drawFocus(centerX * 1.5, centerY, burstR);
-        drawFocus(centerX, centerY, burstR * 1.5);
-
-        // 7. Sharpness Font Test
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'left';
-        [24, 16, 10, 8].forEach((s, i) => {
-            ctx.font = `${s}px Arial`;
-            ctx.fillText(`Focus Test ${s}px - 劇場合作校正圖卡`, 50, centerY + 100 + (i * 25));
-        });
-
-        // 8. Dynamic Info Plate
-        ctx.fillStyle = 'rgba(0,0,0,0.8)';
-        ctx.fillRect(centerX - 180, centerY - 60, 360, 120);
-        ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(centerX - 180, centerY - 60, 360, 120);
-
-        ctx.fillStyle = '#fff';
+        // 7. Info Text (Minimal)
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 4;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.font = 'bold 24px Arial';
-        ctx.fillText(name.toUpperCase(), centerX, centerY - 25);
-        ctx.font = '18px monospace';
-        ctx.fillText(`${w} x ${h} px`, centerX, centerY + 5);
-        ctx.font = '14px Arial';
-        const lumensText = resLumensEl.textContent;
-        ctx.fillText(`AR: ${ar}:1 | Recommended: ${lumensText} Lumens`, centerX, centerY + 30);
 
-        // 9. Outer Boundary (Green)
+        ctx.font = 'bold 40px Arial';
+        ctx.strokeText(name.toUpperCase(), centerX, centerY - 25);
+        ctx.fillText(name.toUpperCase(), centerX, centerY - 25);
+
+        ctx.font = '20px Arial';
+        ctx.strokeText(`${w} x ${h} px  (${ar}:1)`, centerX, centerY + 25);
+        ctx.fillText(`${w} x ${h} px  (${ar}:1)`, centerX, centerY + 25);
+
+        // 8. Outer Border (Green)
+        ctx.lineWidth = 4;
         ctx.strokeStyle = '#00ff00';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(1, 1, w - 2, h - 2);
+        ctx.strokeRect(0, 0, w, h);
 
         // Download
         const link = document.createElement('a');
