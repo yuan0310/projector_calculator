@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projection Slice Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Projection Slice Calculator</h1>
+            <p class="subtitle">Physical Dimensions to Optimized Projector Resolution</p>
+        </header>
+
+        <main>
+            <div class="calculator-grid">
+                <!-- Inputs Section -->
+                <section class="input-panel card">
+                    <h2>Physical Surface</h2>
+                    <div class="input-group">
+                        <label for="proj-name">Project / Slice Name</label>
+                        <input type="text" id="proj-name" placeholder="e.g. MAIN SCREEN" value="SLICE 1">
+                    </div>
+                    <div class="input-group">
+                        <label for="phys-width">Width (cm)</label>
+                        <input type="number" id="phys-width" placeholder="e.g. 1355" step="0.1" value="1355">
+                    </div>
+                    <div class="input-group">
+                        <label for="phys-height">Height (cm)</label>
+                        <input type="number" id="phys-height" placeholder="e.g. 270" step="0.1">
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h2>Projector Settings</h2>
+                    <div class="input-group">
+                        <label for="proj-width">Resolution Width (px)</label>
+                        <input type="number" id="proj-width" value="1920">
+                    </div>
+                    <div class="input-group">
+                        <label for="proj-height">Resolution Height (px)</label>
+                        <input type="number" id="proj-height" value="1200">
+                    </div>
+
+                    <div class="presets">
+                        <button class="btn-preset" data-w="1920" data-h="1200">WUXGA</button>
+                        <button class="btn-preset" data-w="1920" data-h="1080">Full HD</button>
+                        <button class="btn-preset" data-w="1024" data-h="768">XGA</button>
+                        <button class="btn-preset" data-w="3840" data-h="2160">4K UHD</button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h2>Lumen Requirement</h2>
+                    <div class="input-group">
+                        <label for="lumen-env">Theater Ambience</label>
+                        <select id="lumen-env">
+                            <option value="15">Pitch Dark Theater (15 fL)</option>
+                            <option value="30">Dimly Lit / Control Booth (30 fL)</option>
+                            <option value="50" selected>Normal Room / Bright (50 fL)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="lumen-gain">Screen Gain</label>
+                        <input type="number" id="lumen-gain" value="1.0" step="0.1">
+                    </div>
+
+                    <div class="lumen-result card-inner">
+                        <div class="lumen-value" id="res-lumens">0</div>
+                        <div class="lumen-label">Recommended ANSI Lumens</div>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section class="result-panel card">
+                    <h2>Calculated Slice</h2>
+                    <div class="result-display">
+                        <div class="result-item">
+                            <span class="label">Width</span>
+                            <span class="value" id="res-width">0</span>
+                            <span class="unit">px</span>
+                        </div>
+                        <div class="result-separator">×</div>
+                        <div class="result-item">
+                            <span class="label">Height</span>
+                            <span class="value" id="res-height">0</span>
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+
+                    <div class="info-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Physical Aspect Ratio</span>
+                            <span class="meta-value" id="meta-par">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Projector Usage</span>
+                            <span class="meta-value" id="meta-usage">-</span>
+                        </div>
+                    </div>
+
+                    <div class="visualization-container">
+                        <div class="projector-frame" id="viz-frame">
+                            <div class="content-slice" id="viz-slice">
+                                <span class="viz-label">Content</span>
+                            </div>
+                            <span class="frame-label">Projector Frame</span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button id="btn-download" class="btn-primary">
+                            <span class="icon">⬇</span> Download Test Pattern
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
