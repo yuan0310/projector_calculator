@@ -178,100 +178,130 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = h;
         const ctx = canvas.getContext('2d');
 
-        // 1. Background
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, w, h);
-
         const centerX = w / 2;
         const centerY = h / 2;
         const gridSize = 100;
 
-        // 2. Grayscale Ramp (Top)
-        const rampH = Math.min(h * 0.1, 40);
+        // 1. Background: Neutral Deep Gray
+        ctx.fillStyle = '#111111';
+        ctx.fillRect(0, 0, w, h);
+
+        // 2. Grayscale Ramp & Steps (Top)
+        const topH = Math.min(h * 0.12, 60);
+        // Continuous Ramp
+        const gradient = ctx.createLinearGradient(0, 0, w, 0);
+        gradient.addColorStop(0, '#000');
+        gradient.addColorStop(1, '#fff');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, topH / 2);
+        // 11 steps
         for (let i = 0; i < 11; i++) {
+            const v = i * 10;
             const gray = Math.round(i * 25.5);
             ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
-            ctx.fillRect(i * (w / 11), 0, w / 11, rampH);
+            ctx.fillRect(i * (w / 11), topH / 2, w / 11, topH / 2);
+            ctx.fillStyle = i > 5 ? '#000' : '#fff';
+            ctx.font = '10px monospace';
+            ctx.fillText(`${v}%`, i * (w / 11) + 5, topH - 10);
         }
 
         // 3. Color Bars (Bottom)
-        const barH = Math.min(h * 0.1, 40);
+        const botH = Math.min(h * 0.12, 60);
         const colors = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff0000', '#0000ff', '#000000'];
+        const colorLabels = ['W', 'Y', 'C', 'G', 'M', 'R', 'B', 'K'];
         for (let i = 0; i < colors.length; i++) {
             ctx.fillStyle = colors[i];
-            ctx.fillRect(i * (w / colors.length), h - barH, w / colors.length, barH);
+            ctx.fillRect(i * (w / colors.length), h - botH, w / colors.length, botH);
+            ctx.fillStyle = (i === 1 || i === 2 || i === 0) ? '#000' : '#fff';
+            ctx.fillText(colorLabels[i], i * (w / colors.length) + 10, h - 15);
         }
 
         // 4. Grid Lines (Subtle)
         ctx.lineWidth = 1;
-        ctx.strokeStyle = '#222222';
+        ctx.strokeStyle = '#222';
         ctx.beginPath();
-        for (let x = centerX % gridSize; x <= w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = centerY % gridSize; y <= h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        for (let x = centerX % gridSize; x <= w; x += gridSize) { ctx.moveTo(x, topH); ctx.lineTo(x, h - botH); }
+        for (let y = centerY % gridSize; y <= h - botH; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
 
-        // 5. Center Axes (Red)
-        ctx.strokeStyle = '#660000';
-        ctx.lineWidth = 1;
+        // 5. Geometry (Large Circle)
+        ctx.strokeStyle = '#444';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
-        ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
+        ctx.arc(centerX, centerY, Math.min(w, h) / 2.5, 0, Math.PI * 2);
         ctx.stroke();
 
-        // 6. Focus Targets (Corners & Center)
-        function drawFocus(x, y, size) {
-            ctx.strokeStyle = '#ffffff';
+        // 6. Black & White detail boxes
+        const blockS = 40;
+        const bOff = centerX - 250;
+        const wOff = centerX + 50;
+        // Black steps 0, 4, 8, 12, 16, 20
+        [0, 4, 8, 12, 16, 20].forEach((v, i) => {
+            ctx.fillStyle = `rgb(${v},${v},${v})`;
+            ctx.fillRect(bOff + (i * (blockS + 4)), centerY - 130, blockS, blockS);
+            ctx.fillStyle = '#fff';
+            ctx.font = '9px Arial';
+            ctx.fillText(v, bOff + (i * (blockS + 4)), centerY - 135);
+        });
+        // White steps 255, 251, 247, 243, 239, 235
+        [255, 251, 247, 243, 239, 235].forEach((v, i) => {
+            ctx.fillStyle = `rgb(${v},${v},${v})`;
+            ctx.fillRect(wOff + (i * (blockS + 4)), centerY - 130, blockS, blockS);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(v, wOff + (i * (blockS + 4)), centerY - 135);
+        });
+
+        // 7. Focus Pattern (Burst)
+        function drawFocus(x, y, r) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.strokeStyle = '#fff';
             ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.moveTo(x - size, y); ctx.lineTo(x + size, y);
-            ctx.moveTo(x, y - size); ctx.lineTo(x, y + size);
-            ctx.stroke();
-            // Fine lines
-            for (let r = 2; r < size; r += 4) {
-                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); ctx.stroke();
             }
+            for (let i = 4; i < r; i += 8) {
+                ctx.beginPath(); ctx.arc(0, 0, i, 0, Math.PI * 2); ctx.stroke();
+            }
+            ctx.restore();
         }
-        const fSize = Math.min(w, h) * 0.1;
-        drawFocus(centerX, centerY, fSize);
-        drawFocus(fSize, fSize, fSize / 2);
-        drawFocus(w - fSize, fSize, fSize / 2);
-        drawFocus(fSize, h - fSize, fSize / 2);
-        drawFocus(w - fSize, h - fSize, fSize / 2);
+        const burstR = Math.min(w, h) * 0.1;
+        drawFocus(burstR, centerY, burstR * 0.8);
+        drawFocus(w - burstR, centerY, burstR * 0.8);
+        drawFocus(centerX, centerY, burstR * 1.2);
 
-        // 7. Outer Border (Green - Mapping Critical)
+        // 8. Text Sharpness (字級測試)
+        ctx.fillStyle = '#fff';
+        const tSizes = [24, 18, 14, 10, 8, 6];
+        tSizes.forEach((s, i) => {
+            ctx.font = `${s}px Arial`;
+            ctx.fillText(`Focus Test ${s}px - 劇場合作校正圖卡`, centerX - 200, centerY + 100 + (i * 18));
+        });
+
+        // 9. Info Plate
+        ctx.fillStyle = 'rgba(0,0,0,0.85)';
+        ctx.fillRect(centerX - 160, centerY - 50, 320, 100);
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(centerX - 160, centerY - 50, 320, 100);
+
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 20px Arial';
+        ctx.fillText(name.toUpperCase(), centerX, centerY - 15);
+        ctx.font = '16px monospace';
+        ctx.fillText(`${w} x ${h} px`, centerX, centerY + 10);
+        ctx.font = '12px Arial';
+        ctx.fillText(`AR: ${ar}:1 | Lumens: ${resLumensEl.textContent}`, centerX, centerY + 30);
+
+        // 10. Outer Boundary
         ctx.strokeStyle = '#00ff00';
         ctx.lineWidth = 2;
         ctx.strokeRect(1, 1, w - 2, h - 2);
 
-        // 8. Info Overlay
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'black';
-        ctx.shadowBlur = 8;
-
-        ctx.font = 'bold 36px Arial';
-        ctx.fillText(name.toUpperCase(), centerX, centerY - 80);
-
-        ctx.font = '24px Arial';
-        ctx.fillText(`${w} x ${h} px`, centerX, centerY + 80);
-
-        const ar = (w / h).toFixed(2);
-        ctx.font = '16px Arial';
-        ctx.fillText(`AR: ${ar}:1 | Grid: 100px`, centerX, centerY + 110);
-
-        ctx.shadowBlur = 0;
-
-        // 9. Coordinate Labels
-        ctx.font = '10px Arial';
-        ctx.fillStyle = '#888888';
-        for (let x = centerX, n = 0; x <= w; x += gridSize, n++) ctx.fillText(n, x, rampH + 10);
-        for (let x = centerX - gridSize, n = -1; x >= 0; x -= gridSize, n--) ctx.fillText(n, x, rampH + 10);
-
         // Download
         const link = document.createElement('a');
-        link.download = `pro_pattern_${name}_${w}x${h}.png`;
+        link.download = `pro_calibration_${name.replace(/\s+/g, '_')}_${w}x${h}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     }
