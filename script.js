@@ -183,76 +183,103 @@ document.addEventListener('DOMContentLoaded', () => {
         const gridSize = 100;
         const ar = (w / h).toFixed(2);
 
-        // 1. Background: Black
+        // 1. Background
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, w, h);
 
-        // 2. Grid (Standard Square Grid)
+        // 2. Grid (Subtle)
         ctx.lineWidth = 1;
-        ctx.strokeStyle = '#333333';
+        ctx.strokeStyle = '#222';
         ctx.beginPath();
         for (let x = centerX % gridSize; x <= w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
         for (let y = centerY % gridSize; y <= h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
 
         // 3. Center Axes (Red)
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
         ctx.beginPath();
         ctx.moveTo(centerX, 0); ctx.lineTo(centerX, h);
         ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
         ctx.stroke();
 
-        // 4. Large Circle (White)
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#ffffff';
-        ctx.beginPath();
-        const radius = Math.min(w, h) * 0.45;
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.stroke();
+        // 4. Focus Targets
+        function drawFocus(x, y, r, complex = false) {
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.stroke();
 
-        // 5. Grayscale Gradient (255 to 0)
-        const barH = Math.min(h * 0.1, 50);
-        const gradY = h - barH;
-        const gradient = ctx.createLinearGradient(0, 0, w, 0);
-        gradient.addColorStop(0, '#ffffff'); // 255
-        gradient.addColorStop(1, '#000000'); // 0
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, gradY, w, barH);
+            ctx.beginPath();
+            ctx.moveTo(x - r, y); ctx.lineTo(x + r, y);
+            ctx.moveTo(x, y - r); ctx.lineTo(x, y + r);
+            ctx.stroke();
 
-        // 6. Simple Color Strip
-        const colorH = Math.min(h * 0.05, 20);
-        const colorY = gradY - colorH;
+            const steps = complex ? 12 : 6;
+            for (let i = 1; i <= steps; i++) {
+                ctx.beginPath();
+                ctx.arc(x, y, (r / steps) * i, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        const margin = 40;
+        const cornerR = Math.min(w, h) * 0.06;
+        const centerR = Math.min(w, h) * 0.12;
+
+        drawFocus(margin + cornerR, margin + cornerR, cornerR);
+        drawFocus(w - margin - cornerR, margin + cornerR, cornerR);
+        drawFocus(margin + cornerR, h - margin - cornerR, cornerR);
+        drawFocus(w - margin - cornerR, h - margin - cornerR, cornerR);
+        drawFocus(centerX, centerY, centerR, true);
+
+        // 5. Grayscale Ramp (Top)
+        const barH = 30;
+        for (let i = 0; i < 20; i++) {
+            const gray = Math.floor((i / 19) * 255);
+            ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+            ctx.fillRect(i * (w / 20), 0, w / 20, barH);
+
+            ctx.fillStyle = i > 10 ? '#000' : '#fff';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            const coord = i - 10;
+            ctx.fillText(coord, i * (w / 20) + (w / 40), barH / 2 + 4);
+        }
+
+        // 6. Color Bars (Bottom)
         const colors = ['#ffffff', '#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff0000', '#0000ff', '#000000'];
         const cw = w / colors.length;
         for (let i = 0; i < colors.length; i++) {
             ctx.fillStyle = colors[i];
-            ctx.fillRect(i * cw, colorY, cw, colorH);
+            ctx.fillRect(i * cw, h - barH, cw, barH);
         }
 
-        // 7. Info Text (Minimal)
+        // 7. Info Center
         ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 4;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        ctx.font = 'bold 40px Arial';
-        ctx.strokeText(name.toUpperCase(), centerX, centerY - 25);
-        ctx.fillText(name.toUpperCase(), centerX, centerY - 25);
+        ctx.shadowColor = 'black';
+        ctx.shadowBlur = 10;
+        ctx.font = 'bold 36px Arial';
+        ctx.fillText(name.toUpperCase(), centerX, centerY - 60);
 
-        ctx.font = '20px Arial';
-        ctx.strokeText(`${w} x ${h} px  (${ar}:1)`, centerX, centerY + 25);
-        ctx.fillText(`${w} x ${h} px  (${ar}:1)`, centerX, centerY + 25);
+        ctx.font = '24px Arial';
+        ctx.fillText(`${w} x ${h} px`, centerX, centerY + 65);
+        ctx.font = '16px Arial';
+        ctx.fillText(`AR: ${ar}:1 | Grid: 100px`, centerX, centerY + 90);
+        ctx.shadowBlur = 0;
 
-        // 8. Outer Border (Green)
+        // 8. Outer Border
         ctx.lineWidth = 4;
         ctx.strokeStyle = '#00ff00';
-        ctx.strokeRect(0, 0, w, h);
+        ctx.strokeRect(2, 2, w - 4, h - 4);
 
         // Download
         const link = document.createElement('a');
-        link.download = `projection_pattern_${name.replace(/\s+/g, '_')}.png`;
+        link.download = `calibration_pro_${name.replace(/\s+/g, '_')}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     }
