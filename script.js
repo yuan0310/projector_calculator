@@ -45,6 +45,44 @@ document.addEventListener('DOMContentLoaded', () => {
         calculate();
         calculateLumens();
         calculateLensRatio();
+        calculateVisualComfort();
+    }
+
+    function calculateVisualComfort() {
+        const resPitch = document.getElementById('res-pixel-pitch');
+        const zoneRough = document.getElementById('zone-rough');
+        const zoneGood = document.getElementById('zone-good');
+        const zonePerfect = document.getElementById('zone-perfect');
+
+        if (state.physW <= 0 || state.projW <= 0) {
+            resPitch.textContent = "0.00 mm";
+            zoneRough.textContent = "< 0.0m";
+            zoneGood.textContent = "0.0m - 0.0m";
+            zonePerfect.textContent = "> 0.0m";
+            return;
+        }
+
+        // 1. Calculate Pixel Pitch (mm)
+        const widthMm = state.physW * 10;
+        const pitch = widthMm / state.projW;
+
+        // 2. Acuity Distance (Base)
+        // 1 Arc Min = Pitch * 3438
+        const baseDistM = (pitch * 3438) / 1000;
+
+        // 3. Update UI
+        resPitch.textContent = `${pitch.toFixed(2)} mm`;
+
+        // Zones
+        // Visible Structure: 0 to Base
+        zoneRough.textContent = `< ${baseDistM.toFixed(1)}m`;
+
+        // Cohesive: Base to 2x Base
+        const doubleDist = baseDistM * 2;
+        zoneGood.textContent = `${baseDistM.toFixed(1)}m - ${doubleDist.toFixed(1)}m`;
+
+        // Seamless: > 2x Base
+        zonePerfect.textContent = `> ${doubleDist.toFixed(1)}m`;
     }
 
     function calculateLumens() {

@@ -120,28 +120,59 @@
                         </div>
                     </section>
 
-                    <!-- Card C: Lumen Calculator -->
-                    <section class="card tool-card lumen-card">
+                    <!-- Lumen Requirements -->
+                    <div class="card tool-card" id="lumen-card">
                         <h2>Lumen Requirement</h2>
                         <div class="tool-content">
-                            <div class="input-group">
-                                <label for="lumen-env">Theater Ambience</label>
+                            <div class="input-item">
+                                <label>Theater Ambience</label>
                                 <select id="lumen-env">
                                     <option value="15">Pitch Dark (15 fL)</option>
                                     <option value="30">Control Booth (30 fL)</option>
                                     <option value="50" selected>Normal / Bright (50 fL)</option>
                                 </select>
                             </div>
-                            <div class="input-group">
-                                <label for="lumen-gain">Screen Gain</label>
+                            <div class="input-item">
+                                <label>Screen Gain</label>
                                 <input type="number" id="lumen-gain" value="1.0" step="0.1">
                             </div>
-                            <div class="tool-result">
-                                <span class="label">Recommended ANSI:</span>
-                                <span class="value large" id="res-lumens">0</span>
+                            <div class="tool-result" id="lumen-res-box">
+                                <div class="rec-row" style="margin-top:0;">Recommended ANSI</div>
+                                <span class="large" id="res-lumens">0</span>
                             </div>
                         </div>
-                    </section>
+                    </div>
+
+                    <!-- Visual Comfort / Pixel Density -->
+                    <div class="card tool-card" id="comfort-card">
+                        <h2>Visual Comfort Zones</h2>
+                        <div class="tool-content">
+
+                            <div class="info-meta"
+                                style="margin-bottom:1rem; grid-template-columns:1fr; background:transparent; padding:0;">
+                                <div class="meta-item" style="background:rgba(255,255,255,0.05);">
+                                    <span class="meta-label">Pixel Pitch</span>
+                                    <span class="meta-value" id="res-pixel-pitch">0.00 mm</span>
+                                </div>
+                            </div>
+
+                            <div class="zone-list">
+                                <div class="zone-item danger">
+                                    <span class="zone-tag">Visible Structure</span>
+                                    <span class="zone-range" id="zone-rough">&lt; 0.0m</span>
+                                </div>
+                                <div class="zone-item warning">
+                                    <span class="zone-tag">Cohesive</span>
+                                    <span class="zone-range" id="zone-good">0.0m - 0.0m</span>
+                                </div>
+                                <div class="zone-item success">
+                                    <span class="zone-tag">Seamless</span>
+                                    <span class="zone-range" id="zone-perfect">&gt; 0.0m</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
 
                 </div>
             </div>

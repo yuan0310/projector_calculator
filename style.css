@@ -259,8 +259,6 @@ option {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1.5rem;
-    text-align: center;
-    transition: transform 0.3s;
 }
 
 .tool-result:hover {
@@ -270,6 +268,54 @@ option {
 .tool-result.highlight {
     border-color: rgba(100, 255, 218, 0.3);
     background: radial-gradient(circle at center, rgba(100, 255, 218, 0.05) 0%, transparent 100%);
+}
+
+.zone-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.zone-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+}
+
+.zone-tag {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.zone-range {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.zone-item.danger {
+    background: rgba(255, 60, 60, 0.1);
+    border-color: rgba(255, 60, 60, 0.3);
+    color: #ff6b6b;
+}
+
+.zone-item.warning {
+    background: rgba(255, 200, 0, 0.1);
+    border-color: rgba(255, 200, 0, 0.3);
+    color: #ffd43b;
+}
+
+.zone-item.success {
+    background: rgba(100, 255, 218, 0.1);
+    border-color: rgba(100, 255, 218, 0.3);
+    color: var(--accent-color);
 }
 
 .tr-row {
