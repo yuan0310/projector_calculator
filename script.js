@@ -183,9 +183,17 @@ document.addEventListener('DOMContentLoaded', () => {
         resLumensEl.textContent = '0';
         vizSlice.style.width = '0';
         vizSlice.style.height = '0';
+        vizFrame.classList.add('is-empty');
     }
 
     function updateVisualization(physAR, projAR) {
+        // If args are invalid, set empty
+        if (!physAR || !projAR) {
+            vizFrame.classList.add('is-empty');
+            return;
+        }
+        vizFrame.classList.remove('is-empty');
+
         // We need to scale the visualization to fit in the container
         // Base size for the frame in visualization (max pixels)
         const MAX_VIZ_WIDTH = 300;

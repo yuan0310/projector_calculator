@@ -411,6 +411,21 @@ option {
     color: #fff;
 }
 
+/* Empty State Handling */
+.projector-frame.is-empty .content-slice {
+    display: none;
+}
+
+.projector-frame.is-empty::after {
+    content: "Enter Physical Dimensions";
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
 /* Actions */
 .btn-primary {
     background: var(--accent-color);
