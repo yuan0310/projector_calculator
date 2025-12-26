@@ -359,7 +359,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = document.createElement('a');
         link.download = `calibration_pro_${name.replace(/\s+/g, '_')}.png`;
         link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     }
 
     // Initialize state
